@@ -9,12 +9,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ChattingActivity">
+        </activity>
+        <activity android:name=".AuthenticationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ContactsActivity"/>
+        <activity android:name=".LoginActivity"/>
+        <activity android:name=".SignupActivity"/>
     </application>
 
 </manifest>
