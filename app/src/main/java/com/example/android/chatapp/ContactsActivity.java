@@ -21,20 +21,20 @@ public class ContactsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chatting);
+        setContentView(R.layout.contacts_activity);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         adapter = new ContactsListAdapter(new ContactsListAdapter.Interactor(){
             @Override
-            public void onChatClicked(int position, Contact contact) {
-                userId_receiver = contact.getUserId();
+            public void onChatClicked(int position, ChatMessage contact) {
+                userId_receiver = contact.getReceiver();
                 Intent i = new Intent(ContactsActivity.this,ChattingActivity.class);
                 i.putExtra("user_id",userId_receiver);
                 startActivity(i);
             }
 
             @Override
-            public void onChatLongClicked(final int position, final Contact contact) {
+            public void onChatLongClicked(final int position, final ChatMessage contact) {
                 checkForDeleteContact(position,contact);
             }
 
@@ -43,7 +43,7 @@ public class ContactsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    public void checkForDeleteContact(final int position, Contact contact){
+    public void checkForDeleteContact(final int position, ChatMessage contact){
         AlertDialog.Builder alert = new AlertDialog.Builder(ContactsActivity.this);
         alert.setMessage("Are you sure you want to delete this chat?");
         alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
@@ -51,6 +51,7 @@ public class ContactsActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 adapter.deleteContact(position);
                 //Also remove all entries from local database where user_id == userId
+                //This now becomes easier
             }
         });
     }

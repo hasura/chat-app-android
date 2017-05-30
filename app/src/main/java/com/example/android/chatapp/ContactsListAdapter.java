@@ -1,6 +1,7 @@
 package com.example.android.chatapp;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,27 +14,42 @@ import java.util.List;
 
 public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListViewHolder> {
 
-    List<Contact> contacts = new ArrayList<>();
+    List<ChatMessage> contacts = new ArrayList<>();
+    int userId;//extract this value
+    String name;
+    int receiverId;
 
     public ContactsListAdapter(Interactor interactor) {
     }
 
     public interface Interactor{
-        void onChatClicked(int position,Contact contact);
-        void onChatLongClicked(int positin,Contact contact);
+        void onChatClicked(int position,ChatMessage contact);
+        void onChatLongClicked(int positin,ChatMessage contact);
     }
 
     Interactor interactor;
 
     @Override
     public ContactsListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.contact_item,parent,false);
+        return new ContactsListViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ContactsListViewHolder holder, final int position) {
 
-        final Contact contact = contacts.get(position);
+        final ChatMessage contact = contacts.get(position);
+
+        receiverId = contact.getReceiver();
+        //Call a select query on the hasura auth  table to get username where receiverId = user_id
+        //holder.name.setText(name);
+        holder.contents.setText(contact.getContent());
+        holder.time.setText(contact.getTime().toString());
+        if(contact.getSender() == userId) {
+            holder.sent_or_received.setText("S");
+        }else {
+            holder.sent_or_received.setText("R");
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,12 +72,12 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListViewHo
         return contacts.size();
     }
 
-    public void setContacts(List<Contact> contacts){
+    public void setContacts(List<ChatMessage> contacts){
         this.contacts = contacts;
         notifyDataSetChanged();
     }
 
-    public void addContact(Contact contact){
+    public void addContact(ChatMessage contact){
         contacts.add(contact);
         notifyDataSetChanged();
     }

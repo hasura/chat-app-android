@@ -13,8 +13,11 @@ public class ChatMessage {
     @SerializedName("time")
     String time;
 
-    @SerializedName("sender")
-    Boolean sender;
+    @SerializedName("sender_id")
+    Integer sender;
+
+    @SerializedName("receiver_id")
+    Integer receiver;
 
     public String getContent(){
         return content;
@@ -24,14 +27,19 @@ public class ChatMessage {
         return time;
     }
 
-    public Boolean getSender(){
+    public Integer getSender(){
         return sender;
     }
 
-    public ChatMessage(String content,String time,Boolean sender){
+    public Integer getReceiver(){
+        return receiver;
+    }
+
+    public ChatMessage(String content,String time,Integer sender,Integer receiver){
         this.content = content;
         this.time = time;
         this.sender = sender;
+        this.receiver = receiver;
     }
 
     public void setContent(String content){
@@ -42,8 +50,12 @@ public class ChatMessage {
         this.time = time;
     }
 
-    public void setSender(Boolean sender){
+    public void setSender(Integer sender){
         this.sender = sender;
+    }
+
+    public void setReceiver(Integer name){
+        this.receiver = receiver;
     }
 
 }

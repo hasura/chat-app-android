@@ -15,7 +15,7 @@ import java.util.List;
 
 public class DataBaseHandler extends SQLiteOpenHelper {
 
-    int bool;
+    int senderId;
 
     private static final String DATABASE_NAME = "chatapp";
 
@@ -25,7 +25,11 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     private static final String KEY_CONTENTS = "contents";
     private static final String KEY_TIME = "time";
     private static final String KEY_SENDER = "sender";
+    private static final String KEY_RECEIVER = "receiver";
     //private static final String KEY_CONVERSATION = "conversation_id";
+
+    String time;//extract this value
+    Integer userId;//extract this value
 
 
 
@@ -36,7 +40,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_CONTENTS +
-                " TEXT," + KEY_TIME + " TEXT," + KEY_SENDER + " INTEGER" + ")";
+                " TEXT," + KEY_TIME + " TEXT," + KEY_SENDER + " INTEGER," + KEY_RECEIVER + " INTEGER" + ")";
             db.execSQL(CREATE_TABLE);
     }
 
@@ -54,6 +58,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         values.put(KEY_CONTENTS,chatMessage.getContent());
         values.put(KEY_TIME,chatMessage.getTime());
         values.put(KEY_SENDER,chatMessage.getSender());
+        values.put(KEY_RECEIVER,chatMessage.getReceiver());
 
         db.insert(TABLE_NAME,null,values);
         db.close();
@@ -68,14 +73,16 @@ public class DataBaseHandler extends SQLiteOpenHelper {
 
         if(cursor.moveToFirst()){
             do {
-                ChatMessage chatMessage = new ChatMessage("test","time",true);
-                chatMessage.setContent(cursor.getString(1));
-                chatMessage.setTime(cursor.getString(2));
-                bool = cursor.getInt(3);
-                if(bool == 1){
-                    chatMessage.setSender(true);
+                ChatMessage chatMessage = new ChatMessage("test",time,-1,-1);
+                chatMessage.setContent(cursor.getString(0));
+                chatMessage.setTime(cursor.getString(1));
+                senderId = cursor.getInt(2);
+                if(senderId == userId){
+                    chatMessage.setSender(userId);
+                    chatMessage.setReceiver(cursor.getInt(3));
                 }else{
-                    chatMessage.setSender(false);
+                    chatMessage.setSender(cursor.getInt(2));
+                    chatMessage.setReceiver(userId);
                 }
                 chatMessages.add(chatMessage);
             }while (cursor.moveToNext());

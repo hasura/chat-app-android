@@ -8,9 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 public class ChattingActivity extends AppCompatActivity {
@@ -20,7 +20,8 @@ public class ChattingActivity extends AppCompatActivity {
     Button send;
     ChatRecyclerViewAdapter adapter;
     String time;
-    String userId;
+    Integer userId;//extract userId
+    Integer receiverId;//extract receiverId
 
     private static final String DATABASE_NAME = "chatapp";
     private static final int DATABASE_VERSION = 1;
@@ -62,12 +63,13 @@ public class ChattingActivity extends AppCompatActivity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                time = DateFormat.getDateTimeInstance().format(new Date());
+                //time = DateFormat.getDateTimeInstance().format(new Date());
+                time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
 
                 if(message.getText().toString().isEmpty() || message.getText().toString().length() == 0){}
                  else {
-                    adapter.addMessage(new ChatMessage(message.getText().toString(),time, true));
-                    db.insertMessage(new ChatMessage(message.getText().toString(),time, true));
+                    adapter.addMessage(new ChatMessage(message.getText().toString(),time,userId,receiverId));
+                    db.insertMessage(new ChatMessage(message.getText().toString(),time,userId,receiverId));
                 }
                 message.setText("");
 

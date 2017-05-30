@@ -8,4 +8,6 @@
         android:layout_height="match_parent"
         android:id="@+id/contacts_recyclerview"/>
 
+
+
 </LinearLayout>

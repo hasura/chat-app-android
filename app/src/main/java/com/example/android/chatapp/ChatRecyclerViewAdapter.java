@@ -15,12 +15,13 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatViewHolder
 
     private static final int ITEM_LEFT = 1;
     private static final int ITEM_RIGHT  = 2;
+    int userId;//Have to extract this value
 
     List<ChatMessage> chatMessages = new ArrayList<>();
 
     @Override
     public int getItemViewType(int position) {
-        if(chatMessages.get(position).getSender())
+        if(chatMessages.get(position).getSender() == userId)
             return 2;
         else
             return 1;
@@ -45,11 +46,11 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatViewHolder
         if(holder.getItemViewType() == ITEM_LEFT){
             LeftChatViewHolder viewHolder = (LeftChatViewHolder) holder;
             viewHolder.contents.setText(chatMessage.getContent());
-            viewHolder.time.setText(chatMessage.getTime());
+            viewHolder.time.setText(chatMessage.getTime().toString());
         }else{
             RightChatViewHolder viewHolder = (RightChatViewHolder) holder;
             viewHolder.contents.setText(chatMessage.getContent());
-            viewHolder.time.setText(chatMessage.getTime());
+            viewHolder.time.setText(chatMessage.getTime().toString());
         }
     }
 
