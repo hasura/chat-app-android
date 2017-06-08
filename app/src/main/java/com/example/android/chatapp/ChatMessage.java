@@ -54,7 +54,7 @@ public class ChatMessage {
         this.sender = sender;
     }
 
-    public void setReceiver(Integer name){
+    public void setReceiver(Integer receiver){
         this.receiver = receiver;
     }
 

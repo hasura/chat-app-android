@@ -8,9 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class ChattingActivity extends AppCompatActivity {
@@ -20,11 +18,11 @@ public class ChattingActivity extends AppCompatActivity {
     Button send;
     ChatRecyclerViewAdapter adapter;
     String time;
-    Integer userId;//extract userId
-    Integer receiverId;//extract receiverId
+    Integer senderId = 1;
+    Integer receiverId = 2;
 
     private static final String DATABASE_NAME = "chatapp";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     List<ChatMessage> sampleData;
 
@@ -34,12 +32,11 @@ public class ChattingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatting);
 
-        //get userId from previous intent
-        //userId = getIntent().getExtras("user_id");
-
         sampleData = new ArrayList<>();
-        //sampleData.add(new ChatMessage(content1,DateFormat.getDateTimeInstance().format(new Date()),sender1));
-        //sampleData.add(new ChatMessage(content2,DateFormat.getDateTimeInstance().format(new Date()),sender2));
+
+        //sampleData.add(new ChatMessage("hello there", DateFormat.getDateTimeInstance().format(new Date()),1,2));
+        //sampleData.add(new ChatMessage("Hey to different!!", DateFormat.getDateTimeInstance().format(new Date()),3,1));
+        //sampleData.add(new ChatMessage("Hey!!", DateFormat.getDateTimeInstance().format(new Date()),2,1));
 
         final DataBaseHandler db = new DataBaseHandler(this,DATABASE_NAME,null,DATABASE_VERSION);
 
@@ -49,27 +46,30 @@ public class ChattingActivity extends AppCompatActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
-        linearLayoutManager.setSmoothScrollbarEnabled(true);
+        linearLayoutManager.setReverseLayout(true);
         adapter = new ChatRecyclerViewAdapter();
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.smoothScrollToPosition(adapter.getItemCount());
         recyclerView.setAdapter(adapter);
 
+        receiverId = Global.receiverId;
+        senderId = Global.senderId;
         //Mocking Data
 
         sampleData = db.getAllMessages();
-        if(sampleData.size() != 0)
-            adapter.setChatMessages(sampleData);
+            if(sampleData.size() != 0)
+                adapter.setChatMessages(sampleData);
 
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //time = DateFormat.getDateTimeInstance().format(new Date());
-                time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+                Long tsLong = System.currentTimeMillis();
+                time = tsLong.toString();
 
                 if(message.getText().toString().isEmpty() || message.getText().toString().length() == 0){}
                  else {
-                    adapter.addMessage(new ChatMessage(message.getText().toString(),time,userId,receiverId));
-                    db.insertMessage(new ChatMessage(message.getText().toString(),time,userId,receiverId));
+                    adapter.addMessage(new ChatMessage(message.getText().toString(),time,senderId,receiverId));
+                    db.insertMessage(new ChatMessage(message.getText().toString(),time,senderId,receiverId));
                 }
                 message.setText("");
 

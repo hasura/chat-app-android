@@ -5,6 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,16 +18,16 @@ import java.util.List;
 public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListViewHolder> {
 
     List<ChatMessage> contacts = new ArrayList<>();
-    int userId;//extract this value
-    String name;
     int receiverId;
+    String timeStampStr;
 
     public ContactsListAdapter(Interactor interactor) {
+        this.interactor = interactor;
     }
 
     public interface Interactor{
         void onChatClicked(int position,ChatMessage contact);
-        void onChatLongClicked(int positin,ChatMessage contact);
+        void onChatLongClicked(int position,ChatMessage contact);
     }
 
     Interactor interactor;
@@ -42,10 +45,11 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListViewHo
 
         receiverId = contact.getReceiver();
         //Call a select query on the hasura auth  table to get username where receiverId = user_id
-        //holder.name.setText(name);
+        holder.name.setText("User");
         holder.contents.setText(contact.getContent());
-        holder.time.setText(contact.getTime().toString());
-        if(contact.getSender() == userId) {
+        timeStampStr = contact.getTime();
+        holder.time.setText(getRequiredTime(timeStampStr));
+        if(contact.getSender() == Global.senderId /*HasuraSessionStore.getUserId()*/) {
             holder.sent_or_received.setText("S");
         }else {
             holder.sent_or_received.setText("R");
@@ -85,5 +89,15 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListViewHo
     public void deleteContact(int position){
         contacts.remove(contacts.get(position));
         notifyDataSetChanged();
+    }
+
+    public String getRequiredTime(String timeStampStr){
+        try{
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date netDate = (new Date(Long.parseLong(timeStampStr)));
+            return sdf.format(netDate);
+        } catch (Exception ignored) {
+            return "xx";
+        }
     }
 }

@@ -4,6 +4,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +18,15 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatViewHolder
 
     private static final int ITEM_LEFT = 1;
     private static final int ITEM_RIGHT  = 2;
-    int userId;//Have to extract this value
+    int userId = 1;
+    int receiverId = 2;
 
     List<ChatMessage> chatMessages = new ArrayList<>();
+    String timeStampStr;
 
     @Override
     public int getItemViewType(int position) {
-        if(chatMessages.get(position).getSender() == userId)
+        if(chatMessages.get(position).getSender() == userId)//HasuraSessionStore.getUserId())
             return 2;
         else
             return 1;
@@ -46,11 +51,13 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatViewHolder
         if(holder.getItemViewType() == ITEM_LEFT){
             LeftChatViewHolder viewHolder = (LeftChatViewHolder) holder;
             viewHolder.contents.setText(chatMessage.getContent());
-            viewHolder.time.setText(chatMessage.getTime().toString());
+            timeStampStr = chatMessage.getTime();
+            viewHolder.time.setText(getRequiredTime(timeStampStr));
         }else{
             RightChatViewHolder viewHolder = (RightChatViewHolder) holder;
             viewHolder.contents.setText(chatMessage.getContent());
-            viewHolder.time.setText(chatMessage.getTime().toString());
+            timeStampStr = chatMessage.getTime();
+            viewHolder.time.setText(getRequiredTime(timeStampStr));
         }
     }
 
@@ -74,4 +81,15 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatViewHolder
         this.chatMessages.remove(position);
         notifyDataSetChanged();
     }
+
+    public String getRequiredTime(String timeStampStr){
+        try{
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date netDate = (new Date(Long.parseLong(timeStampStr)));
+            return sdf.format(netDate);
+        } catch (Exception ignored) {
+            return "xx";
+        }
+    }
+
 }
