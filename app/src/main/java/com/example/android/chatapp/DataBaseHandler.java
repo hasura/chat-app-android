@@ -45,7 +45,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TABLE_MESSAGE = "CREATE TABLE " + TABLE_MESSAGE + "(" + MESSAGE_CONTENTS +
-                " TEXT," + MESSAGE_TIME + " TIMESTAMP," + MESSAGE_SENDER + " INTEGER," + MESSAGE_RECEIVER + " INTEGER" + ")";
+                " TEXT," + MESSAGE_TIME + " TIMESTAMP," + MESSAGE_SENDER + " INTEGER," + MESSAGE_RECEIVER + " INTEGER," + USER_ID + "INTEGER" + ")";
 
         String CREATE_TABLE_USER = "CREATE TABLE " + TABLE_USER +
                 "(" + USER_NAME + " TEXT," + USER_STATUS + " TEXT," + USER_PICTURE + " BLOB," + USER_ID + " INTEGER" + ")";
@@ -69,6 +69,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         values.put(MESSAGE_TIME,chatMessage.getTime());
         values.put(MESSAGE_SENDER,chatMessage.getSender());
         values.put(MESSAGE_RECEIVER,chatMessage.getReceiver());
+        values.put(USER_ID,chatMessage.getUserId());
 
         db.insert(TABLE_MESSAGE,null,values);
         db.close();
@@ -91,7 +92,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     public UserDetails getProfile(){
         UserDetails userDetails = new UserDetails();
 
-        String selectProfileQuery = "SELECT NAME, STATUS, PICTURE, ID FROM " + TABLE_USER + " WHERE ( ID = " + senderId_d + ")";
+        String selectProfileQuery = "SELECT NAME, STATUS, PICTURE, ID FROM " + TABLE_USER + " WHERE ( ID = " + Global.user.getId() + ")";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectProfileQuery,null);
@@ -115,31 +116,45 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         receiverId = Global.receiverId;
 
         String selectQuery = "SELECT CONTENTS, TIMESTAMP, SENDER_ID, RECEIVER_ID FROM " + TABLE_MESSAGE +
-                " WHERE ( ( sender_id = " + senderId_d  + " AND receiver_id = " + receiverId + ") OR" +
-                " ( sender_id = " + receiverId + " AND receiver_id = " + senderId_d +
-                " ) ) ORDER BY TIMESTAMP DESC ";
+                " WHERE ( ( sender_id = " + Global.user.getId()  + " AND receiver_id = " + receiverId + ") OR" +
+                " ( sender_id = " + receiverId + " AND receiver_id = " + Global.user.getId() +
+                " ) ) ORDER BY TIMESTAMP ASC ";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery,null);
 
         if(cursor.moveToFirst()){
             do {
-                ChatMessage chatMessage = new ChatMessage("test","0",-1,-1);
+                ChatMessage chatMessage = new ChatMessage("test","0",-1,-1,-1);
                 chatMessage.setContent(cursor.getString(0));
                 chatMessage.setTime(cursor.getString(1));
                 senderId = cursor.getInt(2);
-                if(senderId == senderId_d /*HasuraSessionStore.getUserId()*/){
-                    chatMessage.setSender(senderId_d/*HasuraSessionStore.getUserId()*/);
+                if(senderId == senderId_d ){
+                    chatMessage.setSender(senderId_d);
                     chatMessage.setReceiver(cursor.getInt(3));
                 }else{
                     chatMessage.setSender(cursor.getInt(2));
-                    chatMessage.setReceiver(senderId_d/*HasuraSessionStore.getUserId()*/);
+                    chatMessage.setReceiver(senderId_d);
                 }
                 chatMessages.add(chatMessage);
             }while (cursor.moveToNext());
         }
         db.close();
         return chatMessages;
+    }
+
+    public String getLatest(){
+        String selectLatest = "SELECT TIMESTAMP FROM " + TABLE_MESSAGE +
+                " ORDER BY TIMESTAMP DESC LIMIT 1";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectLatest,null);
+
+        if(cursor.moveToFirst()){
+            return cursor.getString(0);
+        }
+
+        return null;
     }
 
     public List<ChatMessage> getAllContacts(){
@@ -173,7 +188,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
             Cursor cursor1 = db.rawQuery(selectContactQuery,null);
 
             if(cursor1.moveToFirst()){
-                ChatMessage contact = new ChatMessage(cursor1.getString(0),cursor1.getString(1),cursor1.getInt(2),cursor1.getInt(3));
+                ChatMessage contact = new ChatMessage(cursor1.getString(0),cursor1.getString(1),cursor1.getInt(2),cursor1.getInt(3),cursor1.getInt(4));
                 contacts.add(contact);
             }
             cursor1.close();

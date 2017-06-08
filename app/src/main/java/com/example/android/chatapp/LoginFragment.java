@@ -14,8 +14,9 @@ import android.widget.Toast;
 
 import io.hasura.sdk.auth.HasuraUser;
 import io.hasura.sdk.auth.responseListener.AuthResponseListener;
-import io.hasura.sdk.auth.responseListener.OtpStatusListener;
 import io.hasura.sdk.core.HasuraException;
+
+import static com.example.android.chatapp.Global.user;
 
 /**
  * Created by amogh on 1/6/17.
@@ -43,12 +44,6 @@ public class LoginFragment extends Fragment {
         mobile = (EditText) parentHolder.findViewById(R.id.login_mobile);
         login_button = (Button) parentHolder.findViewById(R.id.login_button);
         username = (EditText) parentHolder.findViewById(R.id.login_username);
-        mobile.setFocusable(true);
-        mobile.requestFocus();
-
-
-        final HasuraUser user = new HasuraUser();
-
 
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,9 +52,10 @@ public class LoginFragment extends Fragment {
                 user.setMobile(mobile.getText().toString());
                 user.enableMobileOtpLogin();
 
-                /*user.login(new AuthResponseListener() {
+                user.login(new AuthResponseListener() {
                     @Override
                     public void onSuccess(HasuraUser hasuraUser) {
+                        Global.user = hasuraUser;
                         AlertDialog.Builder alert = new AlertDialog.Builder(v.getContext());
                         alert.setMessage("Enter the OTP you received");
                         final EditText otp = new EditText(v.getContext());
@@ -71,6 +67,7 @@ public class LoginFragment extends Fragment {
                                 user.otpLogin(otp.getText().toString(), new AuthResponseListener() {
                                     @Override
                                     public void onSuccess(HasuraUser hasuraUser) {
+                                        Global.user = hasuraUser;
                                         Intent i = new Intent(getActivity().getApplicationContext(),ContactsActivity.class);
                                         startActivity(i);
                                         getActivity().finish();
@@ -90,9 +87,9 @@ public class LoginFragment extends Fragment {
                     public void onFailure(HasuraException e) {
                         Toast.makeText(getActivity().getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
                     }
-                });*/
+                });
 
-                user.sendOtpToMobile(new OtpStatusListener() {
+                /*user.sendOtpToMobile(new OtpStatusListener() {
                     @Override
                     public void onSuccess() {
 
@@ -126,7 +123,10 @@ public class LoginFragment extends Fragment {
                     public void onFailure(HasuraException e) {
                         Toast.makeText(getActivity().getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
                     }
-                });
+                });*/
+                /*Intent i = new Intent(getActivity().getApplicationContext(),ContactsActivity.class);
+                startActivity(i);
+                getActivity().finish();*/
             }
         });
 

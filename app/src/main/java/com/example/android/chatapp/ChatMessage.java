@@ -19,6 +19,8 @@ public class ChatMessage {
     @SerializedName("receiver_id")
     Integer receiver;
 
+    @SerializedName("user_id")
+    Integer userId;
     public String getContent(){
         return content;
     }
@@ -35,11 +37,20 @@ public class ChatMessage {
         return receiver;
     }
 
-    public ChatMessage(String content,String time,Integer sender,Integer receiver){
+    public Integer getUserId(){
+        return userId;
+    }
+
+    public ChatMessage(String content,String time,Integer sender,Integer receiver,Integer userId){
         this.content = content;
         this.time = time;
         this.sender = sender;
         this.receiver = receiver;
+        this.userId = userId;
+    }
+
+    public ChatMessage(){
+
     }
 
     public void setContent(String content){
@@ -58,4 +69,7 @@ public class ChatMessage {
         this.receiver = receiver;
     }
 
+    public void setUserId(Integer userId){
+        this.userId = userId;
+    }
 }

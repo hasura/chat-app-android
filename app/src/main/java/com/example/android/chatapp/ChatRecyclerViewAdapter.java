@@ -18,15 +18,13 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatViewHolder
 
     private static final int ITEM_LEFT = 1;
     private static final int ITEM_RIGHT  = 2;
-    int userId = 1;
-    int receiverId = 2;
 
     List<ChatMessage> chatMessages = new ArrayList<>();
     String timeStampStr;
 
     @Override
     public int getItemViewType(int position) {
-        if(chatMessages.get(position).getSender() == userId)//HasuraSessionStore.getUserId())
+        if(chatMessages.get(position).getSender() == Global.user.getId())
             return 2;
         else
             return 1;

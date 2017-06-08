@@ -23,9 +23,6 @@ public class Profile extends AppCompatActivity {
     ImageView picture;
     Button button;
 
-
-    int userId = 1;
-
     private static final String DATABASE_NAME = "chatapp";
     private static final int DATABASE_VERSION = 2;
 
@@ -45,7 +42,7 @@ public class Profile extends AppCompatActivity {
         button = (Button) findViewById(R.id.profile_button);
 
         details = db.getProfile();
-        if(details.getId() == userId){
+        if(details.getId() == Global.user.getId()){
             name.setText(details.getName());
             status.setText(details.getStatus());
             picture.setImageBitmap(Picture.getImage(details.getPicture()));
@@ -67,7 +64,7 @@ public class Profile extends AppCompatActivity {
                 userDetails.setName(name.getText().toString().trim());
                 userDetails.setStatus(status.getText().toString().trim());
                 userDetails.setPicture(image);
-                userDetails.setId(userId);
+                userDetails.setId(Global.user.getId());
 
 
                 db.insertUserDetails(userDetails);

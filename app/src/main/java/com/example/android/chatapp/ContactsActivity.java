@@ -7,9 +7,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import io.hasura.sdk.core.Call;
+import io.hasura.sdk.core.Callback;
+import io.hasura.sdk.core.HasuraException;
 
 /**
  * Created by amogh on 29/5/17.
@@ -19,6 +23,7 @@ public class ContactsActivity extends AppCompatActivity {
 
     ContactsListAdapter adapter;
     RecyclerView recyclerView;
+    String latestTime;
 
     private static final String DATABASE_NAME = "chatapp";
     private static final int DATABASE_VERSION = 2;
@@ -33,18 +38,39 @@ public class ContactsActivity extends AppCompatActivity {
         Long tsLong = System.currentTimeMillis();
         String time = tsLong.toString();
 
-        List<ChatMessage> sampleData = new ArrayList<>();
-        sampleData.add(new ChatMessage("hello there",time,1,3));
-        sampleData.add(new ChatMessage("Hey to different!!",time,3,1));
-        sampleData.add(new ChatMessage("Hey!!",time,1,2));
-        sampleData.add(new ChatMessage("this is some random text!!",time,1,4));
-        sampleData.add(new ChatMessage("Hello World!!",time,3,1));
+        //final HasuraUser user = new HasuraUser();
+
+        latestTime = db.getLatest();
+
+        Call<List<ChatMessage>,HasuraException> call = Global.user.dataService()
+                .setRequestBody(new SelectMessagesQuery(latestTime))
+                .build();
+        call.executeAsync(new Callback<List<ChatMessage>, HasuraException>() {
+            @Override
+            public void onSuccess(List<ChatMessage> chatMessages) {
+                int i;
+                for(i = 0; i<chatMessages.size(); i++)
+                    db.insertMessage(chatMessages.get(i));
+            }
+
+            @Override
+            public void onFailure(HasuraException e) {
+                Toast.makeText(ContactsActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /*List<ChatMessage> sampleData = new ArrayList<>();
+        sampleData.add(new ChatMessage("hello there",time,1,3,1));
+        sampleData.add(new ChatMessage("Hey to different!!",time,3,1,1));
+        sampleData.add(new ChatMessage("Hey!!",time,1,2,1));
+        sampleData.add(new ChatMessage("this is some random text!!",time,1,4,1));
+        sampleData.add(new ChatMessage("Hello World!!",time,3,1,1));
 
         db.insertMessage(sampleData.get(0));
         db.insertMessage(sampleData.get(1));
         db.insertMessage(sampleData.get(2));
         db.insertMessage(sampleData.get(3));
-        db.insertMessage(sampleData.get(4));
+        db.insertMessage(sampleData.get(4));*/
 
 
 

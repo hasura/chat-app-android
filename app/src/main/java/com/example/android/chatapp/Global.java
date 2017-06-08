@@ -1,5 +1,7 @@
 package com.example.android.chatapp;
 
+import io.hasura.sdk.auth.HasuraUser;
+
 /**
  * Created by amogh on 5/6/17.
  */
@@ -7,4 +9,5 @@ package com.example.android.chatapp;
 public class Global {
     static int senderId;
     static int receiverId;
+    static HasuraUser user;
 }

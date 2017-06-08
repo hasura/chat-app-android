@@ -13,7 +13,9 @@ import android.support.v7.widget.Toolbar;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.hasura.sdk.auth.HasuraUser;
 import io.hasura.sdk.core.Hasura;
+import io.hasura.sdk.core.HasuraSessionStore;
 
 public class AuthenticationActivity1 extends AppCompatActivity{
 
@@ -35,9 +37,11 @@ public class AuthenticationActivity1 extends AppCompatActivity{
                 .enableLogs()
                 .initialise(this);
 
+        Global.user = new HasuraUser();
+
 
         if(!(Hasura.currentUser().getAccessToken() == null)){
-            Global.senderId = Hasura.currentUser().getId();
+            Global.senderId = HasuraSessionStore.getSavedUser().getId();
             Intent i = new Intent(AuthenticationActivity1.this,ContactsActivity.class);
             startActivity(i);
             finish();

@@ -17,6 +17,8 @@ import io.hasura.sdk.auth.responseListener.AuthResponseListener;
 import io.hasura.sdk.auth.responseListener.MobileConfirmationResponseListener;
 import io.hasura.sdk.core.HasuraException;
 
+import static com.example.android.chatapp.Global.user;
+
 
 /**
  * Created by amogh on 1/6/17.
@@ -46,19 +48,18 @@ public class SignUpFragment extends Fragment {
         mobile.setFocusable(true);
         mobile.requestFocus();
 
-        final HasuraUser user = new HasuraUser();
-
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                user.setUsername(username.getText().toString());
-                user.setMobile(mobile.getText().toString());
+                Global.user.setUsername(username.getText().toString());
+                Global.user.setMobile(mobile.getText().toString());
 
-                user.enableMobileOtpLogin();
+                Global.user.enableMobileOtpLogin();
 
-                user.signUp(new AuthResponseListener() {
+                Global.user.signUp(new AuthResponseListener() {
                     @Override
                     public void onSuccess(HasuraUser hasuraUser) {
+                        Global.user = hasuraUser;
                         final AlertDialog.Builder alert = new AlertDialog.Builder(v.getContext());
                         alert.setMessage("Enter the otp you received");
                         final EditText otp = new EditText(v.getContext());
