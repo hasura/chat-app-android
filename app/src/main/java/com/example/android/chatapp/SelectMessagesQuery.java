@@ -15,17 +15,17 @@ public class SelectMessagesQuery {
 
     class Args{
         @SerializedName("table")
-        String table = "chatmessage";
+        String table = "chat_message";
 
         @SerializedName("columns")
-        String[] columns = {"contents","timestamp","sender_id","receriver_id"};
+        String[] columns = {"content","time","sender_id","receiver_id","user_id"};
 
         @SerializedName("where")
         Where where;
     }
 
     class Where{
-        @SerializedName("timestamp")
+        @SerializedName("time")
         GT gt;
     }
     class GT{
@@ -34,7 +34,7 @@ public class SelectMessagesQuery {
     }
 
     public SelectMessagesQuery(String time){
-        Args args = new Args();
+        args = new Args();
         args.where = new Where();
         args.where.gt = new GT();
         args.where.gt.timestamp = time;

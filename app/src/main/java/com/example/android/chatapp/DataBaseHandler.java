@@ -45,7 +45,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TABLE_MESSAGE = "CREATE TABLE " + TABLE_MESSAGE + "(" + MESSAGE_CONTENTS +
-                " TEXT," + MESSAGE_TIME + " TIMESTAMP," + MESSAGE_SENDER + " INTEGER," + MESSAGE_RECEIVER + " INTEGER," + USER_ID + "INTEGER" + ")";
+                " TEXT," + MESSAGE_TIME + " TEXT," + MESSAGE_SENDER + " INTEGER," + MESSAGE_RECEIVER + " INTEGER," + USER_ID + "INTEGER" + ")";
 
         String CREATE_TABLE_USER = "CREATE TABLE " + TABLE_USER +
                 "(" + USER_NAME + " TEXT," + USER_STATUS + " TEXT," + USER_PICTURE + " BLOB," + USER_ID + " INTEGER" + ")";
@@ -69,7 +69,7 @@ public class DataBaseHandler extends SQLiteOpenHelper {
         values.put(MESSAGE_TIME,chatMessage.getTime());
         values.put(MESSAGE_SENDER,chatMessage.getSender());
         values.put(MESSAGE_RECEIVER,chatMessage.getReceiver());
-        values.put(USER_ID,chatMessage.getUserId());
+        //values.put(USER_ID,chatMessage.getUserId());
 
         db.insert(TABLE_MESSAGE,null,values);
         db.close();

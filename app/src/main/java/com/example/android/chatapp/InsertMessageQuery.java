@@ -18,16 +18,16 @@ public class InsertMessageQuery {
 
     class Args{
         @SerializedName("table")
-        String table = "chatmessage";
+        String table = "chat_message";
 
-        @SerializedName("messages")
-        List<ChatMessage> messages;
+        @SerializedName("objects")
+        List<ChatMessage> objects;
     }
 
     public InsertMessageQuery(String contents, String timestamp,Integer senderId,Integer receiverId,Integer userId){
         args = new Args();
-        args.messages = new ArrayList<>();
+        args.objects = new ArrayList<>();
         ChatMessage chat = new ChatMessage(contents,timestamp,senderId,receiverId,userId);
-        args.messages.add(chat);
+        args.objects.add(chat);
     }
 }

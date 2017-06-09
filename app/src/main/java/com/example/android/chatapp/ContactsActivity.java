@@ -9,10 +9,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
-import io.hasura.sdk.core.Call;
+import io.hasura.sdk.auth.HasuraUser;
 import io.hasura.sdk.core.Callback;
+import io.hasura.sdk.core.Hasura;
 import io.hasura.sdk.core.HasuraException;
 
 /**
@@ -36,13 +40,14 @@ public class ContactsActivity extends AppCompatActivity {
         final DataBaseHandler db = new DataBaseHandler(this,DATABASE_NAME,null,DATABASE_VERSION);
 
         Long tsLong = System.currentTimeMillis();
-        String time = tsLong.toString();
+        //String time = tsLong.toString();
+        String time = getRequiredTime(tsLong.toString());
 
-        //final HasuraUser user = new HasuraUser();
+        final HasuraUser user = Hasura.currentUser();
 
         latestTime = db.getLatest();
 
-        Call<List<ChatMessage>,HasuraException> call = Global.user.dataService()
+        /*Call<List<ChatMessage>,HasuraException> call = user.dataService()
                 .setRequestBody(new SelectMessagesQuery(latestTime))
                 .build();
         call.executeAsync(new Callback<List<ChatMessage>, HasuraException>() {
@@ -57,14 +62,33 @@ public class ContactsActivity extends AppCompatActivity {
             public void onFailure(HasuraException e) {
                 Toast.makeText(ContactsActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
+
+        user.getQueryBuilder()
+                .useDataService()
+                .setRequestBody(new SelectMessagesQuery(latestTime))
+                .expectResponseTypeArrayOf(ChatMessage.class)
+                .build()
+                .executeAsync(new Callback<List<ChatMessage>, HasuraException>() {
+                    @Override
+                    public void onSuccess(List<ChatMessage> chatMessages) {
+                        int i;
+                        for(i = 0; i < chatMessages.size(); i++)
+                            db.insertMessage(chatMessages.get(i));
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        Toast.makeText(ContactsActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
 
         /*List<ChatMessage> sampleData = new ArrayList<>();
-        sampleData.add(new ChatMessage("hello there",time,1,3,1));
-        sampleData.add(new ChatMessage("Hey to different!!",time,3,1,1));
-        sampleData.add(new ChatMessage("Hey!!",time,1,2,1));
-        sampleData.add(new ChatMessage("this is some random text!!",time,1,4,1));
-        sampleData.add(new ChatMessage("Hello World!!",time,3,1,1));
+        sampleData.add(new ChatMessage("hello there",time,user.getId(),3,user.getId()));
+        sampleData.add(new ChatMessage("Hey to different!!",time,3,user.getId(),user.getId()));
+        sampleData.add(new ChatMessage("Hey!!",time,user.getId(),2,user.getId()));
+        sampleData.add(new ChatMessage("this is some random text!!",time,user.getId(),4,user.getId()));
+        sampleData.add(new ChatMessage("Hello World!!",time,3,user.getId(),user.getId()));
 
         db.insertMessage(sampleData.get(0));
         db.insertMessage(sampleData.get(1));
@@ -84,7 +108,7 @@ public class ContactsActivity extends AppCompatActivity {
             @Override
             public void onChatClicked(int position, ChatMessage contact) {
 
-                if(contact.getSender() == Global.senderId)
+                if(contact.getSender() == user.getId())
                     Global.receiverId = contact.getReceiver();
                 else
                     Global.receiverId = contact.getSender();
@@ -119,5 +143,15 @@ public class ContactsActivity extends AppCompatActivity {
                 adapter.deleteContact(position);
             }
         });
+    }
+
+    public String getRequiredTime(String timeStampStr){
+        try{
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date netDate = (new Date(Long.parseLong(timeStampStr)));
+            return sdf.format(netDate);
+        } catch (Exception ignored) {
+            return "xx";
+        }
     }
 }

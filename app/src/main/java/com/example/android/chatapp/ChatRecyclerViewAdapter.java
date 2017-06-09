@@ -50,12 +50,12 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatViewHolder
             LeftChatViewHolder viewHolder = (LeftChatViewHolder) holder;
             viewHolder.contents.setText(chatMessage.getContent());
             timeStampStr = chatMessage.getTime();
-            viewHolder.time.setText(getRequiredTime(timeStampStr));
+            viewHolder.time.setText((timeStampStr));
         }else{
             RightChatViewHolder viewHolder = (RightChatViewHolder) holder;
             viewHolder.contents.setText(chatMessage.getContent());
             timeStampStr = chatMessage.getTime();
-            viewHolder.time.setText(getRequiredTime(timeStampStr));
+            viewHolder.time.setText((timeStampStr));
         }
     }
 

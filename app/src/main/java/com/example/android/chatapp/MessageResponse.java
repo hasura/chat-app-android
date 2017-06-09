@@ -7,10 +7,10 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class MessageResponse {
-    @SerializedName("message")
-    String message;
+    @SerializedName("affected_rows")
+    Integer affectedRows;
 
-    public String getMessage(){
-        return message;
+    public Integer getAffectedRows(){
+        return affectedRows;
     }
 }

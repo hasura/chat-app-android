@@ -1,5 +1,6 @@
 package com.example.android.chatapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,10 +10,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
-import io.hasura.sdk.core.Call;
 import io.hasura.sdk.core.Callback;
+import io.hasura.sdk.core.Hasura;
 import io.hasura.sdk.core.HasuraException;
 import io.hasura.sdk.core.HasuraSessionStore;
 
@@ -32,6 +36,14 @@ public class ChattingActivity extends AppCompatActivity {
 
     List<ChatMessage> sampleData;
 
+    @Override
+    public void onBackPressed()
+    {
+        Intent i = new Intent(ChattingActivity.this,ContactsActivity.class);
+        startActivity(i);
+        finish();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +58,14 @@ public class ChattingActivity extends AppCompatActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
-        //linearLayoutManager.setReverseLayout(true);
         adapter = new ChatRecyclerViewAdapter();
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
 
+        Global.user = Hasura.currentUser();
+
         receiverId = Global.receiverId;
-        senderId = Global.senderId;
-        //Mocking Data
+        senderId = Global.user.getId();
 
         sampleData = db.getAllMessages();
             if(sampleData.size() != 0)
@@ -63,7 +75,7 @@ public class ChattingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Long tsLong = System.currentTimeMillis();
-                time = tsLong.toString();
+                time = getRequiredTime(tsLong.toString());
 
                 if(message.getText().toString().isEmpty() || message.getText().toString().length() == 0){}
                  else {
@@ -73,14 +85,16 @@ public class ChattingActivity extends AppCompatActivity {
                     chat.setSender(senderId);
                     chat.setReceiver(receiverId);
                     chat.setUserId(HasuraSessionStore.getSavedUser().getId());
+                    adapter.addMessage(chat);
+                    db.insertMessage(chat);
 
-                    //inserting the messages to the hasura databases.
-                    Call<MessageResponse,HasuraException> call = Global.user.dataService()
+                    /*Call<JSONObject,HasuraException> call = Global.user.dataService()
                             .setRequestBody(new InsertMessageQuery(message.getText().toString(),time,senderId,receiverId,Global.user.getId()))
                             .build();
-                    call.executeAsync(new Callback<MessageResponse, HasuraException>() {
+                    call.executeAsync(new Callback<JSONObject, HasuraException>() {
+
                         @Override
-                        public void onSuccess(MessageResponse messageResponse) {
+                        public void onSuccess(JSONObject jsonObject) {
                             adapter.addMessage(chat);
                             db.insertMessage(chat);
                         }
@@ -89,12 +103,43 @@ public class ChattingActivity extends AppCompatActivity {
                         public void onFailure(HasuraException e) {
                             Toast.makeText(ChattingActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                         }
-                    });
+                    });*/
+
+                    Global.user.getQueryBuilder()
+                            .useDataService()
+                            .setRequestBody(new InsertMessageQuery(message.getText().toString(),time,senderId,receiverId,Global.user.getId()))
+                            .expectResponseOfType(MessageResponse.class)
+                            .build()
+                            .executeAsync(new Callback<MessageResponse, HasuraException>() {
+                                @Override
+                                public void onSuccess(MessageResponse messageResponse) {
+                                    adapter.addMessage(chat);
+                                    db.insertMessage(chat);
+                                }
+
+                                @Override
+                                public void onFailure(HasuraException e) {
+                                    Toast.makeText(ChattingActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 }
                 message.setText("");
+
+
+
 
             }
         });
 
+
+    }
+    public String getRequiredTime(String timeStampStr){
+        try{
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date netDate = (new Date(Long.parseLong(timeStampStr)));
+            return sdf.format(netDate);
+        } catch (Exception ignored) {
+            return "xx";
+        }
     }
 }

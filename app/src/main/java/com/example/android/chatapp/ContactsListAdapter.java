@@ -48,7 +48,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListViewHo
         holder.name.setText("User");
         holder.contents.setText(contact.getContent());
         timeStampStr = contact.getTime();
-        holder.time.setText(getRequiredTime(timeStampStr));
+        holder.time.setText(timeStampStr);
         if(contact.getSender() == Global.senderId /*HasuraSessionStore.getUserId()*/) {
             holder.sent_or_received.setText("S");
         }else {
