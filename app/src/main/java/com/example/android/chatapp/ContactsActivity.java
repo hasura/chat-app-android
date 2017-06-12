@@ -14,10 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import io.hasura.sdk.auth.HasuraUser;
-import io.hasura.sdk.core.Callback;
-import io.hasura.sdk.core.Hasura;
-import io.hasura.sdk.core.HasuraException;
+import io.hasura.sdk.HasuraUser;
+import io.hasura.sdk.Callback;
+import io.hasura.sdk.Hasura;
+import io.hasura.sdk.HasuraException;
 
 /**
  * Created by amogh on 29/5/17.

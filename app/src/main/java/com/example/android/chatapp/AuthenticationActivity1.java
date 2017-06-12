@@ -13,8 +13,11 @@ import android.support.v7.widget.Toolbar;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.hasura.sdk.auth.HasuraUser;
-import io.hasura.sdk.core.Hasura;
+import io.hasura.custom_service_retrofit.RetrofitServiceBuilder;
+import io.hasura.sdk.CustomService;
+import io.hasura.sdk.Hasura;
+import io.hasura.sdk.HasuraUser;
+
 
 public class AuthenticationActivity1 extends AppCompatActivity{
 
@@ -35,6 +38,8 @@ public class AuthenticationActivity1 extends AppCompatActivity{
         Hasura.setProjectName("hello70")
                 .enableLogs()
                 .initialise(this);
+
+        RetrofitServiceBuilder.create();
 
         //user = new HasuraUser();
 

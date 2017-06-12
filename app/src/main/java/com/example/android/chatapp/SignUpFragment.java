@@ -12,10 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import io.hasura.sdk.auth.HasuraUser;
-import io.hasura.sdk.auth.responseListener.AuthResponseListener;
-import io.hasura.sdk.auth.responseListener.MobileConfirmationResponseListener;
-import io.hasura.sdk.core.HasuraException;
+import io.hasura.sdk.HasuraUser;
+import io.hasura.sdk.responseListener.AuthResponseListener;
+import io.hasura.sdk.responseListener.MobileConfirmationResponseListener;
+import io.hasura.sdk.HasuraException;
 
 import static com.example.android.chatapp.Global.user;
 

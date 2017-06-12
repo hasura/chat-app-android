@@ -15,10 +15,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import io.hasura.sdk.core.Callback;
-import io.hasura.sdk.core.Hasura;
-import io.hasura.sdk.core.HasuraException;
-import io.hasura.sdk.core.HasuraSessionStore;
+import io.hasura.sdk.Callback;
+import io.hasura.sdk.Hasura;
+import io.hasura.sdk.HasuraException;
+import io.hasura.sdk.HasuraSessionStore;
 
 public class ChattingActivity extends AppCompatActivity {
 
